@@ -7,7 +7,7 @@
 // Execute `rustlings hint tests6` or use the `hint` watch subcommand for a
 // hint.
 
-// I AM NOT DONE
+
 
 struct Foo {
     a: u128,
@@ -17,11 +17,14 @@ struct Foo {
 /// # Safety
 ///
 /// The `ptr` must contain an owned box of `Foo`.
-unsafe fn raw_pointer_to_box(ptr: *mut Foo) -> Box<Foo> {
+/// "raw pointer"（裸指针）是一种指向内存地址的简单指针
+/// 它们提供了对内存的原始访问，而不会进行 Rust 的借用检查和安全性验证
+unsafe fn raw_pointer_to_box(ptr: *mut Foo) -> Box<Foo> {  
     // SAFETY: The `ptr` contains an owned box of `Foo` by contract. We
     // simply reconstruct the box from that pointer.
-    let mut ret: Box<Foo> = unsafe { ??? };
-    todo!("The rest of the code goes here")
+    let mut ret: Box<Foo> = unsafe { Box::from_raw(ptr) };
+    ret.b = Some("hello".to_string());
+    ret
 }
 
 #[cfg(test)]
