@@ -2,8 +2,10 @@
 	single linked list merge
 	This problem requires you to merge two ordered singly linked lists into one ordered singly linked list
 */
-// I AM NOT DONE
 
+
+// std::ptr::NonNull<T> 是一个非空指针包装类型，用于表示指向类型 T 的非空指针。
+// 它确保指针始终指向有效的内存地址，不会为 null。这有助于在编写和操作涉及裸指针的代码时增加安全性。
 use std::fmt::{self, Display, Formatter};
 use std::ptr::NonNull;
 use std::vec::*;
@@ -34,6 +36,45 @@ impl<T> Default for LinkedList<T> {
         Self::new()
     }
 }
+
+impl<T: PartialOrd + Clone> LinkedList<T> {
+    pub fn merge(mut list_a: LinkedList<T>, mut list_b: LinkedList<T>) -> Self {
+        let mut list_c = LinkedList::new();
+
+        let mut node_a = list_a.start;
+        let mut node_b = list_b.start;
+
+        while node_a.is_some() && node_b.is_some() {
+            let val_a = unsafe { &(*node_a.unwrap().as_ptr()).val };
+            let val_b = unsafe { &(*node_b.unwrap().as_ptr()).val };
+
+            if val_a <= val_b {
+                list_c.add(val_a.clone());
+                node_a = unsafe { (*node_a.unwrap().as_ptr()).next };
+            } else {
+                list_c.add(val_b.clone());
+                node_b = unsafe { (*node_b.unwrap().as_ptr()).next };
+            }
+        }
+
+        // If there are remaining nodes in list_a
+        while let Some(ptr_a) = node_a {
+            let val_a = unsafe { &(*ptr_a.as_ptr()).val };
+            list_c.add(val_a.clone());
+            node_a = unsafe { (*ptr_a.as_ptr()).next };
+        }
+
+        // If there are remaining nodes in list_b
+        while let Some(ptr_b) = node_b {
+            let val_b = unsafe { &(*ptr_b.as_ptr()).val };
+            list_c.add(val_b.clone());
+            node_b = unsafe { (*ptr_b.as_ptr()).next };
+        }
+
+        list_c
+    }
+}
+
 
 impl<T> LinkedList<T> {
     pub fn new() -> Self {
@@ -69,15 +110,6 @@ impl<T> LinkedList<T> {
             },
         }
     }
-	pub fn merge(list_a:LinkedList<T>,list_b:LinkedList<T>) -> Self
-	{
-		//TODO
-		Self {
-            length: 0,
-            start: None,
-            end: None,
-        }
-	}
 }
 
 impl<T> Display for LinkedList<T>
