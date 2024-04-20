@@ -31,7 +31,7 @@ enum ParsePersonError {
     ParseInt(ParseIntError),
 }
 
-// I AM NOT DONE
+
 
 // Steps:
 // 1. If the length of the provided string is 0, an error should be returned
@@ -52,6 +52,24 @@ enum ParsePersonError {
 impl FromStr for Person {
     type Err = ParsePersonError;
     fn from_str(s: &str) -> Result<Person, Self::Err> {
+        if s.len() == 0 {
+            return Err(ParsePersonError::Empty);
+        }
+        let parts: Vec<&str> = s.split(',').collect();
+        if parts.len() != 2 {
+            return Err(ParsePersonError::BadLen);
+        }
+        let name = parts[0];
+        if name.len() == 0 {
+            return Err(ParsePersonError::NoName);
+        }
+        //如果 parse::<usize>() 失败（即返回 Err），则将 Err 转换为 ParsePersonError::ParseInt 类型的错误。
+        //? 是 Rust 中的错误传播操作符，用于简化处理 Result 类型的错误。如果表达式结果为 Err，则整个函数将提前返回并传播该错误，否则继续执行后续操作。
+        let age = parts[1].parse::<usize>().map_err(ParsePersonError::ParseInt)?;
+        Ok(Person {
+            name: name.to_string(),
+            age,
+        })
     }
 }
 

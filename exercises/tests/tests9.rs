@@ -27,16 +27,21 @@
 //
 // You should NOT modify any existing code except for adding two lines of attributes.
 
-// I AM NOT DONE
+
+// Specify that the my_demo_function and my_demo_function_alias functions use the "Rust" ABI
+// reference: https://course.rs/advance/unsafe/superpowers.html
 
 extern "Rust" {
+    #[link_name = "my_demo_function"]
     fn my_demo_function(a: u32) -> u32;
+    #[link_name = "my_demo_function"]
     fn my_demo_function_alias(a: u32) -> u32;
 }
 
 mod Foo {
     // No `extern` equals `extern "Rust"`.
-    fn my_demo_function(a: u32) -> u32 {
+    #[no_mangle]
+    pub fn my_demo_function(a: u32) -> u32 {
         a
     }
 }
